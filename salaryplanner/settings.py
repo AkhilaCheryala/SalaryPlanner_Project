@@ -13,21 +13,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# SECURITY WARNING: keep the secret key used in production secret!
+# Security
 SECRET_KEY = 'django-insecure-sa!(4q-6mw81=1cp52x_xb42+7_!wp(hnm&q%c1vr^&hsd9348'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
-
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,18 +33,20 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
+    'rest_framework.authtoken',  # Added for Token Authentication
     'corsheaders',
 
     # Your apps
     'salary',
     'salary_api',
+    'users',  # Custom user model app
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    
-    # CORS Middleware (should be placed before CommonMiddleware)
+
+    # CORS Middleware (should be before CommonMiddleware)
     'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.common.CommonMiddleware',
@@ -102,21 +100,28 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-
-# Directory where collectstatic will store files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Extra places Django will look for static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS Configuration (Allows frontend to access Django API)
+# ✅ **Django Rest Framework Configuration**
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # Token-based authentication
+        'rest_framework.authentication.SessionAuthentication',  # Support for browsable API
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Restrict API access to authenticated users
+    ],
+}
+
+# ✅ **CORS Configuration (Allowing Frontend Access)**
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React frontend running on Vite
 ]
-
 CORS_ALLOW_CREDENTIALS = True
+
+# ✅ **Custom User Model**
+AUTH_USER_MODEL = 'users.CustomUser'  # Using a custom user model for authentication
